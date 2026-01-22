@@ -1,0 +1,402 @@
+{
+  "name": "TEMPLATE - Smart-Sync AI (Refiner)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bfc63f8d-e7da-4eb0-844d-e11321a4df9f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hamlgLpn3Yo42ju07rgcToEqB-6mq1xWpGmVJGzZtzg",
+          "mode": "list",
+          "cachedResultName": "sample_leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hamlgLpn3Yo42ju07rgcToEqB-6mq1xWpGmVJGzZtzg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 304662290,
+          "mode": "list",
+          "cachedResultName": "sample_leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hamlgLpn3Yo42ju07rgcToEqB-6mq1xWpGmVJGzZtzg/edit#gid=304662290"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "fa4b4d58-b203-4806-9716-e67a112018af",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DDl9uknVMhjXbmTH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1hamlgLpn3Yo42ju07rgcToEqB-6mq1xWpGmVJGzZtzg",
+          "mode": "list",
+          "cachedResultName": "sample_leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hamlgLpn3Yo42ju07rgcToEqB-6mq1xWpGmVJGzZtzg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 304662290,
+          "mode": "list",
+          "cachedResultName": "sample_leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hamlgLpn3Yo42ju07rgcToEqB-6mq1xWpGmVJGzZtzg/edit#gid=304662290"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Synced": "Yes"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "First_Name",
+              "displayName": "First_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Name",
+              "displayName": "Last_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Interaction_Date",
+              "displayName": "Interaction_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Synced",
+              "displayName": "Synced",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gmail_ID",
+              "displayName": "Gmail_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processed_Date",
+              "displayName": "Processed_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "e4437080-e436-4f7f-b2fc-c6e7cf7ac54d",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DDl9uknVMhjXbmTH",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "| **Google Sheets** | Operation: `Append`. Data Mode: `Map Each Column`. | **Note:** Select your sheet. Match headers: Email, First_Name, Last_Name, etc. |"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/contacts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sendInBlueApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{ $json.Email }}\",\n  \"updateEnabled\": true,\n  \"listIds\": [ {{ $json.Status === 'Client' ? [YOUR_CLIENT_LIST_ID] : [YOUR_PROSPECT_LIST_ID] }} ],\n  \"unlinkListIds\": [ {{ $json.Status === 'Client' ? [YOUR_PROSPECT_LIST_ID] : [YOUR_CLIENT_LIST_ID] }} ],\n  \"attributes\": {\n    \"NOM\": \"{{ $json.Last_Name }}\",\n    \"PRENOM\": \"{{ $json['First_Name'] }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        816,
+        0
+      ],
+      "id": "7af8baa8-660c-455f-9d5f-79d8a87c81cd",
+      "name": "Upsert Contact in Brevo",
+      "credentials": {
+        "sendInBlueApi": {
+          "id": "NN9K6XwxNIsFQjHy",
+          "name": "Brevo account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "272432cd-1551-4b21-a6ea-882facac895d",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Client",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "67c27e92-08d4-440e-99b2-04366fdcfa95",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Prospect",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "46cea752-56e8-4e34-ab2d-ade51518cdfb",
+      "name": "Filter to check Status"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "272432cd-1551-4b21-a6ea-882facac895d",
+              "leftValue": "={{ $json['Synced'] }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "67c27e92-08d4-440e-99b2-04366fdcfa95",
+              "leftValue": "={{ $json['Synced'] }}",
+              "rightValue": "Prospect",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        608,
+        0
+      ],
+      "id": "a3e33ab2-92f2-46d3-a94e-738e239fdf5f",
+      "name": "Filter to check Synced"
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 Smart-Sync AI: Precision CRM Injection\n\n### 1. Target the \"Last Mile\"\n\nGet row(s) in sheet: Set the filter to only fetch rows where the Synced column is empty or \"No\".\n\nFilter to check Status: Use this to categorize your 500+ contacts into Prospects, Clients, or Partners.\n\n### 2. Brevo Integration (HTTP Request)\n\nURL: https://api.brevo.com/v3/contacts\n\nBody Logic: Update the listIds in the JSON body.\n\nReplace the placeholder IDs with your specific Brevo List IDs for each category.\n\nExpression: {{ $json.Status === 'Client' ? Client_ID : Prospect_ID }}\n\n### 3. Completion & Audit\n\nUpdate row in sheet: Crucial step. It marks the contact as Synced: Yes in your Google Sheet only after Brevo confirms success. This prevents duplicate emails in your newsletter campaigns.",
+        "height": 528,
+        "width": 768
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -576
+      ],
+      "typeVersion": 1,
+      "id": "7c09d1e0-9463-4a9b-8a80-6046133059b5",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter to check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Contact in Brevo": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter to check Status": {
+      "main": [
+        [
+          {
+            "node": "Filter to check Synced",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter to check Synced": {
+      "main": [
+        [
+          {
+            "node": "Upsert Contact in Brevo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "07277c36-9f50-41ce-bf7d-9f7313795b54",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b8be1b20852d1baf813d0a55099e674b4996e06023f8ce6a3d1d2bbcba79e02b"
+  },
+  "id": "AnBJTVmjKA4wbLHa",
+  "tags": [
+    {
+      "updatedAt": "2026-01-11T21:31:00.871Z",
+      "createdAt": "2026-01-11T21:31:00.871Z",
+      "id": "cR1jOkcEOpTRcabL",
+      "name": "Template"
+    }
+  ]
+}

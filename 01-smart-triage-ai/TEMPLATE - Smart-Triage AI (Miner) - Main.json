@@ -1,0 +1,265 @@
+{
+  "name": "TEMPLATE - Smart-Triage AI (Miner) - Main",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "getAll",
+        "simple": false,
+        "filters": {
+          "q": "=<your own search query>",
+          "receivedAfter": "2023-01-01T00:00:00"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -976,
+        272
+      ],
+      "id": "aaec7a80-2bfb-4b50-aeb3-6472ef43b12c",
+      "name": "Get many messages",
+      "webhookId": "d411b2ae-ef47-43c0-8846-422f84fc845f",
+      "alwaysOutputData": false,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ItpZFEH4MnjaPE7x",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -528,
+        272
+      ],
+      "id": "be776af9-17fc-4244-95ec-2dfd3775f192",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "threadId",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        272
+      ],
+      "id": "863a26f0-2f51-4a91-ad2d-9a2a15262650",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1200,
+        272
+      ],
+      "id": "a252da2a-fc76-4a76-bdee-6ea4e17d90cc",
+      "name": "Schedule Trigger",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## 🚀 Getting Started: Smart-Triage AI (Main)\n\n### 1. Create the Gmail Label (Mandatory) Before running this workflow, you must create the label in your Gmail account. \n\nStep 1: Open Gmail and go to Settings (gear icon) > See all settings.\n\nStep 2: Go to the Labels tab.\n\nStep 3: Scroll down to \"Labels\" and click Create new label.\n\nStep 4: Name it exactly: n8n-processed (all lowercase, no spaces).\n\nWhy? The workflow uses this label to mark emails as \"done\" so they aren't processed twice.\n\n### 2. Node Configurations\n\nSchedule Trigger: Set to run every 5 minutes (ideal for processing large archives in stable batches).\n\nGet many messages: Paste the bilingual search query in the Query field. Ensure it includes -label:n8n-processed.\n\nRemove Duplicates: Uses the Message ID to ensure data integrity before the loop.\n\nLoop Over Items: Sends emails one-by-one to the Sub-Workflow. This \"Micro-Batch\" approach prevents server timeouts.\n\nSend a message: (Optional) Configure this to notify you (via Email or Slack) once a full batch of \"Digital Mining\" is complete.",
+        "height": 608,
+        "width": 896
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1488,
+        -464
+      ],
+      "typeVersion": 1,
+      "id": "00454d4e-125e-408d-aa3d-b950b4fbe240",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "gKHxnUt2OvhPtcgG",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/gKHxnUt2OvhPtcgG",
+          "cachedResultName": "Email Analysis Agent Sub-Workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        320
+      ],
+      "id": "b53307b0-4d33-4feb-a65c-e3caf7f6b49f",
+      "name": "Call 'Email Analysis Agent Sub-Workflow'"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "id"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        128
+      ],
+      "id": "9db3b188-46df-416b-8d40-2d479e8f8f27",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "subject": "n8n Flow Execution",
+        "message": "The batch of emails has been processed successfully.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        128
+      ],
+      "id": "5076addb-1903-46f6-a171-2cec437bbf04",
+      "name": "Send a message",
+      "webhookId": "ea7b4772-88e6-4076-af23-dd35a84b5e34",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ItpZFEH4MnjaPE7x",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Email Analysis Agent Sub-Workflow'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Email Analysis Agent Sub-Workflow'": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "bdaa3fad-bbba-4b21-aea4-fa5674ae1c9c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b8be1b20852d1baf813d0a55099e674b4996e06023f8ce6a3d1d2bbcba79e02b"
+  },
+  "id": "RAVGy7oRlCC0x1vA",
+  "tags": [
+    {
+      "updatedAt": "2026-01-11T21:31:00.871Z",
+      "createdAt": "2026-01-11T21:31:00.871Z",
+      "id": "cR1jOkcEOpTRcabL",
+      "name": "Template"
+    }
+  ]
+}

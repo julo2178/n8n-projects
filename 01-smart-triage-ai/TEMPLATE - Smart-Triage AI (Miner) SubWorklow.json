@@ -1,0 +1,370 @@
+{
+  "name": "TEMPLATE - Smart-Triage AI (Miner) SubWorklow",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        112
+      ],
+      "id": "4565b55e-9040-4885-8c28-4234e130fcae",
+      "name": "Get a message",
+      "webhookId": "e5f17600-fabb-4ab9-858a-054eb0351270",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ItpZFEH4MnjaPE7x",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=**Note:** Technical keys are in English to ensure cross-platform compatibility.\n\n```text\nYou are a technical data extraction automation for a CRM. Your role is to qualify the relevance of an email and extract the SENDER'S contact data.\n\nRULE N°1: FORMAT\nRespond only in pure JSON. Absolute PROHIBITION to use Markdown (no ```json). Start your message directly with \"{\".\n\nRULE N°2: RELEVANCE ANALYSIS (RELEVANT)\nYou must mark \"relevant\": true if the SUBJECT or the BODY of the message indicates a real request, a project, a collaboration, or an accounting document related to the following fields: [YOUR BUSINESS SECTORS].\n\nTarget Keywords: [LIST OF KEYWORDS EX: Quote, Shooting, Collaboration]\n\nPriority Exceptions (Mark \"relevant\": false if):\n- The sender is part of this exclusion list: [LIST OF INTERNAL EMAILS].\n- The message is an automatic notification, newsletter, or administrative alert.\n- Keywords are ONLY present in the original recipient's signature.\n\nRULE N°3: DATA EXTRACTION\nIf relevant is true, extract the sender's information:\n- Identity: Look for the first and last name of the writer.\n- Company: Name of the sender's company (Leave empty if individual).\n- Email: Search priority: 1. Body, 2. Reply-To, 3. From.\n\nJSON STRUCTURE:\n{\n  \"relevant\": boolean,\n  \"first_name\": \"string\",\n  \"last_name\": \"string\",\n  \"email\": \"string\",\n  \"phone\": \"string\",\n  \"company\": \"string\",\n  \"date\": \"{{ $json.date }}\"\n}\n\nDATA TO ANALYZE:\nFrom: {{ $json.headers.from }}\nSubject: {{ $json.subject }}\nText: {{ $json.text || $json.snippet || $json.html }}\nReply To: {{ $json.replyTo.value[0].address || \"\" }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        112
+      ],
+      "id": "5ee186b9-9253-40c8-b00b-0e31fc4861c3",
+      "name": "Message a model",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        -32
+      ],
+      "id": "5c1c9724-7766-410f-85cc-66a52d3d8a5e",
+      "name": "Append or update row in sheet",
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DDl9uknVMhjXbmTH",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.ID_Gmail }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        112
+      ],
+      "id": "68852cfc-b4f5-406c-8ee2-8190d4550b63",
+      "name": "Add label to message",
+      "webhookId": "8d0f3cbf-4ef5-4aac-9531-28019f4ba3c1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ItpZFEH4MnjaPE7x",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        800,
+        112
+      ],
+      "id": "30f4c984-493c-4eac-8401-e6b662536c22",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Sub-Workflow: The Extraction Engine\n\n### 1. Configure Credentials\n\nGmail: Connect your Gmail account and ensure the \"Gmail Label\" node points to n8n-processed.\n\nOpenAI: Connect your API key. In the AI Agent node, update the [Sectors] and [Keywords] in the System Prompt.\n\nGoogle Sheets: Select your spreadsheet. Ensure your headers match: Email, First_Name, Last_Name, Company, Phone, Status, Interaction_Date, Synced, Gmail_ID, Processed_Date.\n\n### 2. Data Extraction Logic\n\nGet a message: Uses the ID passed from the Main workflow to pull full headers and body text.\n\nMessage a model (OpenAI): > * Setup: Update the System Prompt with your specific business sectors (e.g., Culinary Photography).\n\nFormat: Ensure \"JSON Mode\" is enabled.\n\nExtract and Structure: Maps the AI string into clean fields: first_name, last_name, email, company.\n\n### 3. Sorting & Storage\n\nIf email is relevant: A filter that discards newsletters or spam, keeping only real business opportunities.\n\nAppend or update row: Connect your Google Sheet. Match the columns to the structured data from the previous step.\n\nAdd label to message: Applies n8n-processed in Gmail. This is the \"Safety Switch\" that marks the job as done.\n",
+        "height": 656,
+        "width": 752
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        -608
+      ],
+      "typeVersion": 1,
+      "id": "173f51ad-1129-4880-a9be-1be521c760f9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf5176a1-3c0f-4e4a-9823-c1962fe5e763",
+              "name": "Email",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).email ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "4a494cdc-c726-4468-8403-9d488c80802b",
+              "name": "First_Name",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).first_name ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "b345820c-0c55-4991-acca-2c62f3355385",
+              "name": "Last_Name",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).last_name ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "846e8391-16b3-4e96-a114-17db01836bcd",
+              "name": "Phone",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).phone ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "cf1f1a87-1f0b-4aa8-b569-3a13a0cc3435",
+              "name": "Company",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).company ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "4ea5615b-7378-412c-84ca-68edfe473771",
+              "name": "relevant",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).relevant ?? false }}",
+              "type": "boolean"
+            },
+            {
+              "id": "8a867b49-1430-4b78-9670-b5441cbf9c8a",
+              "name": "gmail_id",
+              "value": "={{ $json.gmail_id }}",
+              "type": "string"
+            },
+            {
+              "id": "02de9b68-d7e7-4fda-8fdb-265bcd860d98",
+              "name": "processed_at",
+              "value": "={{ $now.format('dd/MM/yyyy HH:mm:ss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        112
+      ],
+      "id": "cd3c2206-e46f-4c86-9725-e627a9152373",
+      "name": "Extract and Structure data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "56089aa4-4ec2-42a5-aa20-7104598fc5ff",
+              "leftValue": "={{ $json.relevant }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        352,
+        112
+      ],
+      "id": "6df23110-86b9-457a-98a8-b496e4a81245",
+      "name": "If email is relevant",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "38b943ed-74f4-42c5-83f2-398323be4a51",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -672,
+        112
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "notesInFlow": true,
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Extract and Structure data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract and Structure data": {
+      "main": [
+        [
+          {
+            "node": "If email is relevant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If email is relevant": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "e8f9f193-3118-40b2-b4a1-4a9ec1169338",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b8be1b20852d1baf813d0a55099e674b4996e06023f8ce6a3d1d2bbcba79e02b"
+  },
+  "id": "jEt2ZwABGlC8KvFm",
+  "tags": [
+    {
+      "updatedAt": "2026-01-11T21:31:00.871Z",
+      "createdAt": "2026-01-11T21:31:00.871Z",
+      "id": "cR1jOkcEOpTRcabL",
+      "name": "Template"
+    }
+  ]
+}
